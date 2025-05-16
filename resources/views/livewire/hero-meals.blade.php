@@ -7,7 +7,7 @@
             <div class="details-container">
                 <div class="menu-item-details">
                     <h3 class="item-name">{{ $item->name }}</h3>
-                    <div class="item-price">₱{{ number_format($item->price, 2) }}</div>
+                <div class="item-price">₱{{ number_format($item->price, 2) }}</div>
                 </div>
                 <button class="add-to-cart-btn" wire:click="addToCart({{ $item->id }})">
                     <img src="{{ asset('images/ct3.png') }}" alt="Cart" class="ct3">
@@ -15,6 +15,4 @@
             </div>
         </div>
     @endforeach
-</div>
-
-
+</div> 

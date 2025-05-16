@@ -22,6 +22,11 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             MeriendaBestSeeder::class,
+            BudgetMealSeeder::class,
+            HeroMealSeeder::class,
+            PlatterMenuSeeder::class,
+            DrinkSeeder::class,
+            CombusogSeeder::class,
         ]);
     }
 }
