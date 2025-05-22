@@ -79,6 +79,37 @@ class Cart extends Component
             'checkoutData.payment_method' => 'required|in:e-wallet,card,cash'
         ]);
 
+        // Decrease item quantities on order placement
+        foreach ($this->cartItems as $itemId => $cartItem) {
+            $category = $cartItem['category'] ?? null;
+            $quantityOrdered = $cartItem['quantity'] ?? 1;
+            $model = null;
+            switch ($category) {
+                case 'meriendabest':
+                    $model = \App\Models\MeriendaBest::find($itemId);
+                    break;
+                case 'budgetmeals':
+                    $model = \App\Models\BudgetMeal::find($itemId);
+                    break;
+                case 'heromeals':
+                    $model = \App\Models\HeroMeal::find($itemId);
+                    break;
+                case 'combusog':
+                    $model = \App\Models\Combusog::find($itemId);
+                    break;
+                case 'platter':
+                    $model = \App\Models\PlatterMenu::find($itemId);
+                    break;
+                case 'drinks':
+                    $model = \App\Models\Drink::find($itemId);
+                    break;
+            }
+            if ($model && $model->quantity >= $quantityOrdered) {
+                $model->quantity -= $quantityOrdered;
+                $model->save();
+            }
+        }
+
         if ($this->checkoutData['payment_method'] === 'e-wallet') {
             // Here you would integrate with Xendit
             // For now, we'll just show a success message

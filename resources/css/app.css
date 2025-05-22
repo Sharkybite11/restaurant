@@ -206,7 +206,8 @@ html, body {
     flex-direction: column;
     position: relative;
     margin: 0 auto;
-    overflow: visible;
+    overflow: hidden;
+    padding-bottom: 10px;
     transition: box-shadow 0.2s, transform 0.2s;
 }
 .menu-item-card:hover {
@@ -595,21 +596,22 @@ html, body {
 }
 
 .quantity-btn {
-    width: 30px;
-    height: 30px;
-    border: 1px solid #ddd;
-    background: white;
-    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 16px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
+    transition: background-color 0.3s;
+    font-size: 1rem;
+    min-width: 90px;
+    text-align: center;
+    white-space: nowrap;
+    display: inline-block;
 }
 
 .quantity-btn:hover {
-    background-color: #f0f0f0;
+    background-color: #45a049;
 }
 
 .quantity {
@@ -993,4 +995,95 @@ html, body {
 .back-btn svg {
     width: 16px;
     height: 16px;
+}
+
+/* Staff Console Quantity Editing Styles */
+.quantity-control {
+    margin-top: 10px;
+}
+
+.quantity-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 1rem;
+    min-width: 90px;
+    text-align: center;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.quantity-btn:hover {
+    background-color: #45a049;
+}
+
+.quantity-input-group {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.quantity-input {
+    width: 80px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.save-quantity-btn {
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.save-quantity-btn:hover {
+    background-color: #1976D2;
+}
+
+.save-quantity-btn.cancel-btn {
+    background-color: #aaa;
+}
+
+.save-quantity-btn.cancel-btn:hover {
+    background-color: #888;
+}
+
+.item-quantity {
+    font-size: 0.95rem;
+    color: #666;
+    margin-top: 4px;
+    margin-bottom: 2px;
+}
+
+.item-quantity,
+.quantity-control,
+.quantity-input-group {
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    word-break: break-word;
+}
+
+.quantity-input-group {
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.quantity-input {
+    min-width: 0;
+    width: 60px;
+}
+
+.save-quantity-btn,
+.cancel-btn {
+    min-width: 50px;
+    padding: 5px 8px;
+    font-size: 0.95rem;
 }

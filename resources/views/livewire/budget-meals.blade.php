@@ -8,6 +8,7 @@
                 <div class="menu-item-details">
                     <h3 class="item-name">{{ $item->name }}</h3>
                     <div class="item-price">₱{{ number_format($item->price, 2) }}</div>
+                    <div class="item-quantity">Quantity: {{ $item->quantity }}</div>
                 </div>
             <button class="add-to-cart-btn" wire:click="$dispatch('add-to-cart', { itemId: {{ $item->id }}, category: 'budgetmeals' })">
                 <img src="{{ asset('images/ct3.png') }}" alt="Cart" class="ct3">

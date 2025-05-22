@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Livewire\Logo;
 use App\Livewire\Menu;
 use App\Livewire\Cart;
+use App\Livewire\StaffConsole;
 
 // Home/Landing page
 Route::get('/', Logo::class)->name('home');
@@ -16,6 +17,11 @@ Route::get('/menu/{type}', Menu::class)->name('menu.type')
 
 // Cart route
 Route::get('/cart', Cart::class)->name('cart');
+
+// Staff Console routes
+Route::get('/staff-console', StaffConsole::class)->name('staff.console');
+Route::get('/staff-console/{type}', StaffConsole::class)->name('staff.console.type')
+    ->where('type', 'dine-in|to-go');
 
 // Fallback route for 404s
 Route::fallback(function () {
