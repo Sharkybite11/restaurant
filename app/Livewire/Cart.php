@@ -110,19 +110,27 @@ class Cart extends Component
             }
         }
 
+        // Store the order and items in the orders table
+        \App\Models\Order::create([
+            'customer_name' => $this->checkoutData['name'] ?? null,
+            'customer_email' => $this->checkoutData['email'] ?? null,
+            'customer_phone' => $this->checkoutData['phone'] ?? null,
+            'customer_address' => $this->checkoutData['address'] ?? null,
+            'payment_method' => $this->checkoutData['payment_method'],
+            'total' => $this->total,
+            'status' => 'pending',
+            'items' => json_encode(array_values($this->cartItems)),
+        ]);
+
         if ($this->checkoutData['payment_method'] === 'e-wallet') {
-            // Here you would integrate with Xendit
-            // For now, we'll just show a success message
             $this->clearCart();
             $this->showCheckoutModal = false;
             session()->flash('message', 'Redirecting to Xendit payment...');
         } elseif ($this->checkoutData['payment_method'] === 'card') {
-            // Handle card payment
             $this->clearCart();
             $this->showCheckoutModal = false;
             session()->flash('message', 'Processing card payment...');
         } else {
-            // Handle cash payment
             $this->clearCart();
             $this->showCheckoutModal = false;
             session()->flash('message', 'Order placed successfully! Please prepare exact amount for cash payment.');

@@ -124,6 +124,8 @@
                         wire:click="selectCategory('platter')">Platter</button>
                 <button class="category-btn {{ $selectedCategory === 'drinks' ? 'active' : '' }}" 
                         wire:click="selectCategory('drinks')">Drinks</button>
+                <button class="category-btn {{ $selectedCategory === 'orders' ? 'active' : '' }}" 
+                        wire:click="selectCategory('orders')">Orders</button>
             </div>
         </div>
         <div class="menu-items">
@@ -139,6 +141,8 @@
                 <livewire:staff-platter-menu />
             @elseif($selectedCategory === 'drinks')
                 <livewire:staff-drinks />
+            @elseif($selectedCategory === 'orders')
+                <livewire:staff-orders />
             @endif
         </div>
     @endif
