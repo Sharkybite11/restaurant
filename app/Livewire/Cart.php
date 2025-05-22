@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Session;
+use Xendit\Xendit;
 
 class Cart extends Component
 {
@@ -111,7 +112,7 @@ class Cart extends Component
         }
 
         // Store the order and items in the orders table
-        \App\Models\Order::create([
+        $order = \App\Models\Order::create([
             'customer_name' => $this->checkoutData['name'] ?? null,
             'customer_email' => $this->checkoutData['email'] ?? null,
             'customer_phone' => $this->checkoutData['phone'] ?? null,
@@ -123,9 +124,43 @@ class Cart extends Component
         ]);
 
         if ($this->checkoutData['payment_method'] === 'e-wallet') {
-            $this->clearCart();
-            $this->showCheckoutModal = false;
-            session()->flash('message', 'Redirecting to Xendit payment...');
+            try {
+                // Initialize Xendit with your secret key
+                Xendit::setApiKey(config('services.xendit.secret_key'));
+
+                // Create e-wallet payment
+                $params = [
+                    'external_id' => 'order-' . $order->id,
+                    'amount' => $this->total,
+                    'description' => 'Payment for Order #' . $order->id,
+                    'invoice_duration' => 86400, // 24 hours
+                    'customer' => [
+                        'given_names' => $this->checkoutData['name'],
+                        'email' => $this->checkoutData['email'],
+                        'mobile_number' => $this->checkoutData['phone']
+                    ],
+                    'success_redirect_url' => route('payment.success'),
+                    'failure_redirect_url' => route('payment.failure'),
+                    'payment_methods' => ['OVO', 'DANA', 'LINKAJA', 'SHOPEEPAY']
+                ];
+
+                $createInvoice = \Xendit\Invoice::create($params);
+                
+                // Store the invoice ID in the order
+                $order->update([
+                    'payment_id' => $createInvoice['id'],
+                    'payment_url' => $createInvoice['invoice_url']
+                ]);
+
+                $this->clearCart();
+                $this->showCheckoutModal = false;
+                
+                // Redirect to Xendit payment page
+                return redirect()->away($createInvoice['invoice_url']);
+            } catch (\Exception $e) {
+                session()->flash('error', 'Payment processing failed: ' . $e->getMessage());
+                return null;
+            }
         } elseif ($this->checkoutData['payment_method'] === 'card') {
             $this->clearCart();
             $this->showCheckoutModal = false;

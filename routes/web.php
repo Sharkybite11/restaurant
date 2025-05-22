@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\XenditWebhookController;
 
 use App\Livewire\Logo;
 use App\Livewire\Menu;
@@ -17,6 +18,20 @@ Route::get('/menu/{type}', Menu::class)->name('menu.type')
 
 // Cart route
 Route::get('/cart', Cart::class)->name('cart');
+
+// Payment routes
+Route::get('/payment/success', function () {
+    session()->flash('success', 'Payment successful! Thank you for your order.');
+    return redirect()->route('home');
+})->name('payment.success');
+
+Route::get('/payment/failure', function () {
+    session()->flash('error', 'Payment failed. Please try again.');
+    return redirect()->route('cart');
+})->name('payment.failure');
+
+// Xendit webhook route
+Route::post('/webhook/xendit', [XenditWebhookController::class, 'handle'])->name('webhook.xendit');
 
 // Staff Console routes
 Route::get('/staff-console', StaffConsole::class)->name('staff.console');
