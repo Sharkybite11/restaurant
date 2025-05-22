@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Session;
-use Xendit\Xendit;
+use Xendit\Xendit as XenditClient;
 
 class Cart extends Component
 {
@@ -126,7 +126,7 @@ class Cart extends Component
         if ($this->checkoutData['payment_method'] === 'e-wallet') {
             try {
                 // Initialize Xendit with your secret key
-                Xendit::setApiKey(config('services.xendit.secret_key'));
+                XenditClient::setApiKey(config('services.xendit.secret_key'));
 
                 // Create e-wallet payment
                 $params = [
