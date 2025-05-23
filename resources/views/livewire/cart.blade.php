@@ -107,7 +107,13 @@
                                     Credit/Debit Card
                                 </span>
                             </label>
-
+                            <label class="payment-option">
+                                <input type="radio" wire:model.live="checkoutData.payment_method" value="cash" required>
+                                <span class="payment-label">
+                                    <img src="{{ asset('images/cash.png') }}" alt="Cash" class="payment-icon">
+                                    Cash
+                                </span>
+                            </label>
                         </div>
                     </div>
                 @else
