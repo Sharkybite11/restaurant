@@ -158,12 +158,25 @@
                             </div>
                         @elseif($checkoutData['payment_method'] === 'cash')
                             <div class="payment-details">
-                                <h4>Cash</h4>
+                                <h4>Cash Payment</h4>
                                 <p>Please insert the bills and coins in the machine.</p>
                                 <div class="cash-amount">
                                     <strong>Total Amount to Pay:</strong>
                                     <span class="amount">₱{{ number_format($total * 1.12, 2) }}</span>
                                 </div>
+                                <div class="inserted-amount" wire:poll.1s>
+                                    <strong>Amount Inserted:</strong>
+                                    <span class="amount">₱{{ number_format(session('inserted_total', 0), 2) }}</span>
+                                </div>
+                                <div class="remaining-amount">
+                                    <strong>Remaining Amount:</strong>
+                                    <span class="amount">₱{{ number_format(max(0, ($total * 1.12) - session('inserted_total', 0)), 2) }}</span>
+                                </div>
+                                @if(session('inserted_total', 0) >= ($total * 1.12))
+                                    <div class="payment-complete">
+                                        <p>Payment complete! Please wait for your receipt.</p>
+                                    </div>
+                                @endif
                             </div>
                         @endif
 

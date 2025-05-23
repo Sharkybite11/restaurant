@@ -23,6 +23,10 @@ Route::get('/staff-console', StaffConsole::class)->name('staff.console');
 Route::get('/staff-console/{type}', StaffConsole::class)->name('staff.console.type')
     ->where('type', 'dine-in|to-go');
 
+// Money insertion routes
+Route::post('/money/update', [App\Http\Controllers\MoneyInsertionController::class, 'updateInsertedAmount']);
+Route::post('/money/reset', [App\Http\Controllers\MoneyInsertionController::class, 'resetInsertedAmount']);
+
 // Fallback route for 404s
 Route::fallback(function () {
     return redirect()->route('home');

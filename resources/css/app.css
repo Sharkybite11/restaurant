@@ -958,10 +958,39 @@ html, body {
     margin-top: 1rem;
 }
 
-.cash-amount .amount {
-    font-size: 1.2rem;
+.inserted-amount,
+.remaining-amount {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+}
+
+.inserted-amount .amount {
+    color: #28a745;
     font-weight: 600;
-    color: #4CAF50;
+}
+
+.remaining-amount .amount {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.payment-complete {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #d4edda;
+    color: #155724;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.payment-complete p {
+    margin: 0;
 }
 
 /* Payment Selection Styles */
