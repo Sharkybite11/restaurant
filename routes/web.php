@@ -27,6 +27,19 @@ Route::get('/staff-console/{type}', StaffConsole::class)->name('staff.console.ty
 Route::post('/money/update', [App\Http\Controllers\MoneyInsertionController::class, 'updateInsertedAmount']);
 Route::post('/money/reset', [App\Http\Controllers\MoneyInsertionController::class, 'resetInsertedAmount']);
 
+// Payment Routes
+Route::get('/payment/success/{order_id}', function ($orderId) {
+    $order = \App\Models\Order::findOrFail($orderId);
+    $order->update(['status' => 'paid']);
+    return view('payment.success', ['order' => $order]);
+})->name('payment.success');
+
+Route::get('/payment/failure/{order_id}', function ($orderId) {
+    $order = \App\Models\Order::findOrFail($orderId);
+    $order->update(['status' => 'failed']);
+    return view('payment.failure', ['order' => $order]);
+})->name('payment.failure');
+
 // Fallback route for 404s
 Route::fallback(function () {
     return redirect()->route('home');

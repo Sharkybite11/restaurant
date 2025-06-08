@@ -4,6 +4,8 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Session;
+use App\Services\XenditService;
+use Illuminate\Support\Str;
 
 class Cart extends Component
 {
@@ -17,6 +19,13 @@ class Cart extends Component
         'address' => '',
         'payment_method' => ''
     ];
+
+    protected $xenditService;
+
+    public function boot(XenditService $xenditService)
+    {
+        $this->xenditService = $xenditService;
+    }
 
     public function mount()
     {
@@ -76,46 +85,19 @@ class Cart extends Component
     public function processCheckout()
     {
         $this->validate([
+            'checkoutData.name' => 'required|string',
+            'checkoutData.email' => 'required|email',
+            'checkoutData.phone' => 'required|string',
+            'checkoutData.address' => 'required|string',
             'checkoutData.payment_method' => 'required|in:e-wallet,card,cash'
         ]);
 
-        // Decrease item quantities on order placement
-        foreach ($this->cartItems as $itemId => $cartItem) {
-            $category = $cartItem['category'] ?? null;
-            $quantityOrdered = $cartItem['quantity'] ?? 1;
-            $model = null;
-            switch ($category) {
-                case 'meriendabest':
-                    $model = \App\Models\MeriendaBest::find($itemId);
-                    break;
-                case 'budgetmeals':
-                    $model = \App\Models\BudgetMeal::find($itemId);
-                    break;
-                case 'heromeals':
-                    $model = \App\Models\HeroMeal::find($itemId);
-                    break;
-                case 'combusog':
-                    $model = \App\Models\Combusog::find($itemId);
-                    break;
-                case 'platter':
-                    $model = \App\Models\PlatterMenu::find($itemId);
-                    break;
-                case 'drinks':
-                    $model = \App\Models\Drink::find($itemId);
-                    break;
-            }
-            if ($model && $model->quantity >= $quantityOrdered) {
-                $model->quantity -= $quantityOrdered;
-                $model->save();
-            }
-        }
-
-        // Store the order and items in the orders table
-        \App\Models\Order::create([
-            'customer_name' => $this->checkoutData['name'] ?? null,
-            'customer_email' => $this->checkoutData['email'] ?? null,
-            'customer_phone' => $this->checkoutData['phone'] ?? null,
-            'customer_address' => $this->checkoutData['address'] ?? null,
+        // Create order first
+        $order = \App\Models\Order::create([
+            'customer_name' => $this->checkoutData['name'],
+            'customer_email' => $this->checkoutData['email'],
+            'customer_phone' => $this->checkoutData['phone'],
+            'customer_address' => $this->checkoutData['address'],
             'payment_method' => $this->checkoutData['payment_method'],
             'total' => $this->total,
             'status' => 'pending',
@@ -123,9 +105,45 @@ class Cart extends Component
         ]);
 
         if ($this->checkoutData['payment_method'] === 'e-wallet') {
-            $this->clearCart();
-            $this->showCheckoutModal = false;
-            session()->flash('message', 'Redirecting to Xendit payment...');
+            try {
+                // Prepare items for Xendit invoice
+                $items = collect($this->cartItems)->map(function ($item) {
+                    return [
+                        'name' => $item['name'],
+                        'price' => $item['price'],
+                        'quantity' => $item['quantity']
+                    ];
+                })->toArray();
+
+                // Create Xendit invoice
+                $invoiceData = [
+                    'external_id' => 'ORDER-' . $order->id . '-' . Str::random(6),
+                    'amount' => $this->total,
+                    'description' => 'Payment for Order #' . $order->id,
+                    'customer_name' => $this->checkoutData['name'],
+                    'customer_email' => $this->checkoutData['email'],
+                    'items' => $items,
+                    'success_url' => route('payment.success', ['order_id' => $order->id]),
+                    'failure_url' => route('payment.failure', ['order_id' => $order->id]),
+                ];
+
+                $invoice = $this->xenditService->createInvoice($invoiceData);
+
+                // Update order with Xendit invoice ID
+                $order->update([
+                    'xendit_invoice_id' => $invoice['id'],
+                    'xendit_invoice_url' => $invoice['invoice_url']
+                ]);
+
+                $this->clearCart();
+                $this->showCheckoutModal = false;
+                
+                // Redirect to Xendit payment page
+                return redirect()->away($invoice['invoice_url']);
+            } catch (\Exception $e) {
+                session()->flash('error', 'Failed to process payment: ' . $e->getMessage());
+                return;
+            }
         } elseif ($this->checkoutData['payment_method'] === 'card') {
             $this->clearCart();
             $this->showCheckoutModal = false;
