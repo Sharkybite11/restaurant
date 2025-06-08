@@ -7,6 +7,21 @@ use App\Models\Combusog;
 
 class CombusogMenu extends Component
 {
+    public $showItemModal = false;
+    public $selectedItem = null;
+
+    public function openItemModal($itemId)
+    {
+        $this->selectedItem = Combusog::find($itemId);
+        $this->showItemModal = true;
+    }
+
+    public function closeItemModal()
+    {
+        $this->showItemModal = false;
+        $this->selectedItem = null;
+    }
+
     public function render()
     {
         $items = Combusog::orderBy('name')->get();

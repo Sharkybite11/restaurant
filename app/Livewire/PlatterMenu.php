@@ -3,16 +3,16 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use App\Models\BudgetMeal;
+use App\Models\Platter;
 
-class BudgetMeals extends Component
+class PlatterMenu extends Component
 {
     public $showItemModal = false;
     public $selectedItem = null;
 
     public function openItemModal($itemId)
     {
-        $this->selectedItem = BudgetMeal::find($itemId);
+        $this->selectedItem = Platter::find($itemId);
         $this->showItemModal = true;
     }
 
@@ -24,9 +24,9 @@ class BudgetMeals extends Component
 
     public function render()
     {
-        $items = BudgetMeal::orderBy('name')->get();
+        $items = Platter::orderBy('name')->get();
 
-        return view('livewire.budget-meals', [
+        return view('livewire.platter-menu', [
             'items' => $items
         ]);
     }
