@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Session;
+use App\Events\CashPaymentReceived;
 
 class Cart extends Component
 {
@@ -110,8 +111,8 @@ class Cart extends Component
             }
         }
 
-        // Store the order and items in the orders table
-        \App\Models\Order::create([
+        // Create order data
+        $orderData = [
             'customer_name' => $this->checkoutData['name'] ?? null,
             'customer_email' => $this->checkoutData['email'] ?? null,
             'customer_phone' => $this->checkoutData['phone'] ?? null,
@@ -119,7 +120,20 @@ class Cart extends Component
             'payment_method' => $this->checkoutData['payment_method'],
             'total' => $this->total,
             'status' => 'pending',
-            'items' => json_encode(array_values($this->cartItems)),
+            'items' => array_values($this->cartItems),
+            'created_at' => now()->toDateTimeString()
+        ];
+
+        // Store the order in the database
+        $order = \App\Models\Order::create([
+            'customer_name' => $orderData['customer_name'],
+            'customer_email' => $orderData['customer_email'],
+            'customer_phone' => $orderData['customer_phone'],
+            'customer_address' => $orderData['customer_address'],
+            'payment_method' => $orderData['payment_method'],
+            'total' => $orderData['total'],
+            'status' => $orderData['status'],
+            'items' => json_encode($orderData['items']),
         ]);
 
         if ($this->checkoutData['payment_method'] === 'e-wallet') {
@@ -131,6 +145,9 @@ class Cart extends Component
             $this->showCheckoutModal = false;
             session()->flash('message', 'Processing card payment...');
         } else {
+            // For cash payments, broadcast the order data
+            broadcast(new CashPaymentReceived($orderData))->toOthers();
+            
             $this->clearCart();
             $this->showCheckoutModal = false;
             session()->flash('message', 'Order placed successfully! Please prepare exact amount for cash payment.');

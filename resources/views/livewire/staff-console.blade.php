@@ -146,5 +146,18 @@
             @endif
         </div>
     @endif
+
+    <div class="p-4">
+        <h1 class="text-2xl font-bold mb-4">Staff Console</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Cash Payments Section -->
+            <div class="bg-gray-100 rounded-lg p-4">
+                <livewire:cash-payments />
+            </div>
+            
+            <!-- Other sections can be added here -->
+        </div>
+    </div>
 </div>
 

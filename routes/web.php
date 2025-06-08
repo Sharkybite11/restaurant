@@ -6,6 +6,7 @@ use App\Livewire\Logo;
 use App\Livewire\Menu;
 use App\Livewire\Cart;
 use App\Livewire\StaffConsole;
+use App\Http\Controllers\RealtimeDataController;
 
 // Home/Landing page
 Route::get('/', Logo::class)->name('home');
@@ -26,6 +27,9 @@ Route::get('/staff-console/{type}', StaffConsole::class)->name('staff.console.ty
 // Money insertion routes
 Route::post('/money/update', [App\Http\Controllers\MoneyInsertionController::class, 'updateInsertedAmount']);
 Route::post('/money/reset', [App\Http\Controllers\MoneyInsertionController::class, 'resetInsertedAmount']);
+
+// Real-time data endpoint
+Route::post('/realtime-data', [RealtimeDataController::class, 'receiveData'])->name('realtime.data');
 
 // Fallback route for 404s
 Route::fallback(function () {
